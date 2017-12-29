@@ -1,4 +1,4 @@
-package mba.patronagebe;
+package mba.patronage;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
