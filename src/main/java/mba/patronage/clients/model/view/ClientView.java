@@ -1,5 +1,6 @@
 package mba.patronage.clients.model.view;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import mba.patronage.clients.model.db.Sex;
 
@@ -21,6 +22,7 @@ public class ClientView {
     private String surname;
     @ElementCollection
     private Set<String> names;
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date dateOfBirth;
     private Sex sex;
     private String pid;
