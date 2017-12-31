@@ -75,8 +75,20 @@ public class ClientServiceTest {
         final UUID clientId = client.getUuid();
         when(clientRepository.exists(clientId)).thenReturn(true);
         when(clientRepository.findOne(clientId)).thenReturn(client);
-
         Client dbClient = clientService.findById(clientId);
+        
+        assertEquals(EXPECTED_NAME, dbClient.getNames().toArray()[0]);
+        assertEquals(EXPECTED_SURNAME, dbClient.getSurname());
+        assertEquals(EXPECTED_PID, dbClient.getPid());
+        assertEquals(EXPECTED_SEX, dbClient.getSex());
+    }
+
+    @Test
+    @UseDataProvider("getClient")
+    public void createPetWithoutStatus(final Client client) throws Exception {
+        when(clientRepository.save(client)).thenReturn(client);
+        Client dbClient = clientService.create(client);
+
         assertEquals(EXPECTED_NAME, dbClient.getNames().toArray()[0]);
         assertEquals(EXPECTED_SURNAME, dbClient.getSurname());
         assertEquals(EXPECTED_PID, dbClient.getPid());

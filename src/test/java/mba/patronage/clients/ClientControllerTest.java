@@ -4,6 +4,7 @@ import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import mba.patronage.clients.model.db.Client;
 import mba.patronage.clients.model.db.Sex;
 import mba.patronage.config.Url;
+import mba.patronage.util.ModelMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +25,10 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -81,6 +84,23 @@ public class ClientControllerTest {
                 .andExpect(jsonPath("$.pid", is(EXPECTED_PID)))
                 .andExpect(jsonPath("$.sex", is(EXPECTED_SEX.toString())));
     }
+
+    @Test
+    public void createClient() throws Exception {
+        Client client = getClient();
+        when(clientService.create(any(Client.class))).thenReturn(client);
+        mockMvc.perform(post(Url.URL_CLIENT)
+                .contentType(CONTENT_TYPE)
+                .content(ModelMapper.convertToJsonString(client)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.uuid", is(EXPECTED_UUID.toString())))
+                .andExpect(jsonPath("$.names", hasSize(1)))
+                .andExpect(jsonPath("$.names[0]", is(EXPECTED_NAME)))
+                .andExpect(jsonPath("$.surname", is(EXPECTED_SURNAME)))
+                .andExpect(jsonPath("$.pid", is(EXPECTED_PID)))
+                .andExpect(jsonPath("$.sex", is(EXPECTED_SEX.toString())));
+    }
+
 
     private List<Client> getClients() throws ParseException {
 

@@ -1,5 +1,6 @@
 package mba.patronage.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,5 +33,13 @@ public class ModelMapper {
             views.add(view);
         }
         return views;
+    }
+
+    public static String convertToJsonString(Object value) {
+        try {
+            return OBJECT_MAPPER_DISABLED_ANNOTATIONS.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
