@@ -29,6 +29,10 @@ public class VehicleService {
         return vehicleRepository.findOne(id);
     }
 
+    Vehicle create(Vehicle vehicle) {
+        return vehicleRepository.save(vehicle);
+    }
+
     private void throwVehicleNotFoundIfDoesNotExist(UUID id, Class object) throws NotFoundException {
         if (!vehicleRepository.exists(id)) {
             throw new NotFoundException(object.getSimpleName());

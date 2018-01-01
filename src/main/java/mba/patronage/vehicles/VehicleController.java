@@ -10,9 +10,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,5 +46,17 @@ class VehicleController {
         return ResponseEntity
                 .ok()
                 .body(ModelMapper.convertToView(vehicle, VehicleView.class));
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<VehicleView> addVehicle(@Valid @RequestBody VehicleView vehicleView) {
+        final Vehicle createdVehicle = vehicleService.create(ModelMapper.convertToModel(vehicleView, Vehicle.class));
+        final URI baseLocation = ServletUriComponentsBuilder.fromCurrentRequest()
+                .build().toUri();
+        final String vehicleLocationString = String.format("/%s/%s", baseLocation, createdVehicle.getUuid());
+        final URI location = UriComponentsBuilder.fromUriString(vehicleLocationString).build().toUri();
+        return ResponseEntity
+                .created(location)
+                .body(ModelMapper.convertToView(createdVehicle, VehicleView.class));
     }
 }

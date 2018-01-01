@@ -71,5 +71,16 @@ public class VehicleServiceTest {
         assertEquals(EXPECTED_VIN, dbvVehicle.getVin());
     }
 
+    @Test
+    @UseDataProvider("getVehicle")
+    public void createVehicle(final Vehicle vehicle) throws Exception {
+        when(vehicleRepository.save(vehicle)).thenReturn(vehicle);
+        Vehicle dbVehicle = vehicleService.create(vehicle);
+
+        assertEquals(EXPECTED_BRAND, dbVehicle.getBrand());
+        assertEquals(EXPECTED_MODEL, dbVehicle.getModel());
+        assertEquals(EXPECTED_VIN, dbVehicle.getVin());
+    }
+
 
 }

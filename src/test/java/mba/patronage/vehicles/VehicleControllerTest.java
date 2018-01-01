@@ -2,6 +2,7 @@ package mba.patronage.vehicles;
 
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import mba.patronage.config.Api;
+import mba.patronage.util.ModelMapper;
 import mba.patronage.vehicles.model.db.Vehicle;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +21,10 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,6 +70,20 @@ public class VehicleControllerTest {
         mockMvc.perform(get(String.format("%s/%s", Api.URL_VEHICLE, EXPECTED_UUID)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
+                .andExpect(jsonPath("$.uuid", is(EXPECTED_UUID.toString())))
+                .andExpect(jsonPath("$.brand", is(EXPECTED_BRAND)))
+                .andExpect(jsonPath("$.model", is(EXPECTED_MODEL)))
+                .andExpect(jsonPath("$.vin", is(EXPECTED_VIN)));
+    }
+
+    @Test
+    public void createVehicle() throws Exception {
+        Vehicle vehicle = getVehicle();
+        when(vehicleService.create(any(Vehicle.class))).thenReturn(vehicle);
+        mockMvc.perform(post(Api.URL_VEHICLE)
+                .contentType(CONTENT_TYPE)
+                .content(ModelMapper.convertToJsonString(vehicle)))
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.uuid", is(EXPECTED_UUID.toString())))
                 .andExpect(jsonPath("$.brand", is(EXPECTED_BRAND)))
                 .andExpect(jsonPath("$.model", is(EXPECTED_MODEL)))
