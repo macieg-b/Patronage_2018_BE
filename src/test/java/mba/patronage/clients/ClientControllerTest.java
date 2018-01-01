@@ -3,7 +3,7 @@ package mba.patronage.clients;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import mba.patronage.clients.model.db.Client;
 import mba.patronage.clients.model.db.Sex;
-import mba.patronage.config.Url;
+import mba.patronage.config.Api;
 import mba.patronage.util.ModelMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +27,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -66,7 +68,7 @@ public class ClientControllerTest {
         final List<Client> clients = getClients();
         when(clientService.findAll()).thenReturn(clients);
 
-        mockMvc.perform(get(Url.URL_CLIENT))
+        mockMvc.perform(get(Api.URL_CLIENT))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$", hasSize(CLIENTS_LIST_SIZE)));
@@ -76,7 +78,7 @@ public class ClientControllerTest {
     public void getOneClient() throws Exception {
         Client client = getClient();
         when(clientService.findById(EXPECTED_UUID)).thenReturn(client);
-        mockMvc.perform(get(String.format("%s/%s", Url.URL_CLIENT, EXPECTED_UUID)))
+        mockMvc.perform(get(String.format("%s/%s", Api.URL_CLIENT, EXPECTED_UUID)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(CONTENT_TYPE))
                 .andExpect(jsonPath("$.uuid", is(EXPECTED_UUID.toString())))
@@ -91,7 +93,7 @@ public class ClientControllerTest {
     public void createClient() throws Exception {
         Client client = getClient();
         when(clientService.create(any(Client.class))).thenReturn(client);
-        mockMvc.perform(post(Url.URL_CLIENT)
+        mockMvc.perform(post(Api.URL_CLIENT)
                 .contentType(CONTENT_TYPE)
                 .content(ModelMapper.convertToJsonString(client)))
                 .andExpect(status().isCreated())
@@ -107,9 +109,17 @@ public class ClientControllerTest {
     public void updateClient() throws Exception {
         Client client = getClient();
         when(clientService.update(eq(EXPECTED_UUID), any(Client.class))).thenReturn(client);
-        mockMvc.perform(put(String.format("%s/%s", Url.URL_CLIENT, EXPECTED_UUID))
+        mockMvc.perform(put(String.format("%s/%s", Api.URL_CLIENT, EXPECTED_UUID))
                 .contentType(CONTENT_TYPE)
                 .content(ModelMapper.convertToJsonString(client)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteClient() throws Exception {
+        UUID id = UUID.randomUUID();
+        doNothing().when(clientService).delete(id);
+        mockMvc.perform(delete(String.format("%s/%s", Api.URL_CLIENT, id)))
                 .andExpect(status().isOk());
     }
 

@@ -86,7 +86,7 @@ public class ClientServiceTest {
 
     @Test
     @UseDataProvider("getClient")
-    public void createPetWithoutStatus(final Client client) throws Exception {
+    public void createClient(final Client client) throws Exception {
         when(clientRepository.save(client)).thenReturn(client);
         Client dbClient = clientService.create(client);
 
@@ -109,5 +109,12 @@ public class ClientServiceTest {
         assertEquals(EXPECTED_SURNAME, dbClient.getSurname());
         assertEquals(EXPECTED_PID, dbClient.getPid());
         assertEquals(EXPECTED_SEX, dbClient.getSex());
+    }
+
+    @Test
+    public void deleteClient() throws Exception {
+        final UUID clientId = UUID.randomUUID();
+        when(clientRepository.exists(clientId)).thenReturn(true);
+        clientService.delete(clientId);
     }
 }

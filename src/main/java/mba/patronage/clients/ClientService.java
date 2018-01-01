@@ -39,6 +39,11 @@ public class ClientService {
         return clientRepository.save(client);
     }
 
+    void delete(UUID id) {
+        throwClientNotFoundIfDoesNotExist(id, Client.class);
+        clientRepository.delete(id);
+    }
+
     private void throwClientNotFoundIfDoesNotExist(UUID id, Class object) throws NotFoundException {
         if (!clientRepository.exists(id)) {
             throw new NotFoundException(object.getSimpleName());
