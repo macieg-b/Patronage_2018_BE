@@ -22,9 +22,13 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -88,6 +92,24 @@ public class VehicleControllerTest {
                 .andExpect(jsonPath("$.brand", is(EXPECTED_BRAND)))
                 .andExpect(jsonPath("$.model", is(EXPECTED_MODEL)))
                 .andExpect(jsonPath("$.vin", is(EXPECTED_VIN)));
+    }
+
+    @Test
+    public void updateVehicle() throws Exception {
+        Vehicle vehicle = getVehicle();
+        when(vehicleService.update(eq(EXPECTED_UUID), any(Vehicle.class))).thenReturn(vehicle);
+        mockMvc.perform(put(String.format("%s/%s", Api.URL_VEHICLE, EXPECTED_UUID))
+                .contentType(CONTENT_TYPE)
+                .content(ModelMapper.convertToJsonString(vehicle)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteVehicle() throws Exception {
+        UUID id = UUID.randomUUID();
+        doNothing().when(vehicleService).delete(id);
+        mockMvc.perform(delete(String.format("%s/%s", Api.URL_VEHICLE, id)))
+                .andExpect(status().isOk());
     }
 
 

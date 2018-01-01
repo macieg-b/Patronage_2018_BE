@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(DataProviderRunner.class)
@@ -80,6 +81,27 @@ public class VehicleServiceTest {
         assertEquals(EXPECTED_BRAND, dbVehicle.getBrand());
         assertEquals(EXPECTED_MODEL, dbVehicle.getModel());
         assertEquals(EXPECTED_VIN, dbVehicle.getVin());
+    }
+
+    @Test
+    @UseDataProvider("getVehicle")
+    public void updateVehicle(final Vehicle vehicle) throws Exception {
+        final UUID vehicleUuid = vehicle.getUuid();
+        when(vehicleRepository.exists(vehicleUuid)).thenReturn(true);
+        when(vehicleRepository.findOne(vehicleUuid)).thenReturn(vehicle);
+        when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
+        Vehicle dbVehicle = vehicleService.update(vehicleUuid, vehicle);
+
+        assertEquals(EXPECTED_BRAND, dbVehicle.getBrand());
+        assertEquals(EXPECTED_MODEL, dbVehicle.getModel());
+        assertEquals(EXPECTED_VIN, dbVehicle.getVin());
+    }
+
+    @Test
+    public void deleteVehicle() throws Exception {
+        final UUID vehicleId = UUID.randomUUID();
+        when(vehicleRepository.exists(vehicleId)).thenReturn(true);
+        vehicleService.delete(vehicleId);
     }
 
 
