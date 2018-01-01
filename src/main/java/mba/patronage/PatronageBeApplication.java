@@ -3,6 +3,8 @@ package mba.patronage;
 import mba.patronage.clients.ClientRepository;
 import mba.patronage.clients.model.db.Client;
 import mba.patronage.clients.model.db.Sex;
+import mba.patronage.vehicles.VehicleRepository;
+import mba.patronage.vehicles.model.db.Vehicle;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +22,7 @@ public class PatronageBeApplication {
     }
 
     @Bean
-    CommandLineRunner init(ClientRepository clientRepository) {
+    CommandLineRunner initClients(ClientRepository clientRepository) {
         return (args) -> {
             DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
             HashSet<String> men = new HashSet<>();
@@ -51,6 +53,27 @@ public class PatronageBeApplication {
                     .dateOfBirth(dateFormat.parse("02/01/1990"))
                     .sex(Sex.FEMALE)
                     .build());
+
+
+
+        };
+    }
+
+    @Bean
+    CommandLineRunner initVehicles(VehicleRepository vehicleRepository) {
+        return (args) -> {
+            vehicleRepository.save(Vehicle.builder()
+                    .brand("Fiat")
+                    .model("500")
+                    .vin("ABC123456789DEF")
+                    .build());
+
+            vehicleRepository.save(Vehicle.builder()
+                    .brand("Jeep")
+                    .model("Wrangler")
+                    .vin("DEF123456789ABC")
+                    .build());
+
         };
     }
 }
