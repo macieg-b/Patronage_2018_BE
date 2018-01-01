@@ -26,9 +26,11 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -101,6 +103,15 @@ public class ClientControllerTest {
                 .andExpect(jsonPath("$.sex", is(EXPECTED_SEX.toString())));
     }
 
+    @Test
+    public void updateClient() throws Exception {
+        Client client = getClient();
+        when(clientService.update(eq(EXPECTED_UUID), any(Client.class))).thenReturn(client);
+        mockMvc.perform(put(String.format("%s/%s", Url.URL_CLIENT, EXPECTED_UUID))
+                .contentType(CONTENT_TYPE)
+                .content(ModelMapper.convertToJsonString(client)))
+                .andExpect(status().isOk());
+    }
 
     private List<Client> getClients() throws ParseException {
 

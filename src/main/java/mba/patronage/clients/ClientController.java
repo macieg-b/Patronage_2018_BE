@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,5 +59,13 @@ class ClientController {
         return ResponseEntity
                 .created(location)
                 .body(ModelMapper.convertToView(createdClient, ClientView.class));
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<ClientView> updateClient(@PathVariable UUID id, @Valid @RequestBody ClientView clientView) {
+        final Client updatedClient = clientService.update(id, ModelMapper.convertToModel(clientView, Client.class));
+        return ResponseEntity
+                .ok()
+                .body(ModelMapper.convertToView(updatedClient, ClientView.class));
     }
 }

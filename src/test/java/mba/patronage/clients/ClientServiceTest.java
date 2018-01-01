@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(DataProviderRunner.class)
@@ -88,6 +89,21 @@ public class ClientServiceTest {
     public void createPetWithoutStatus(final Client client) throws Exception {
         when(clientRepository.save(client)).thenReturn(client);
         Client dbClient = clientService.create(client);
+
+        assertEquals(EXPECTED_NAME, dbClient.getNames().toArray()[0]);
+        assertEquals(EXPECTED_SURNAME, dbClient.getSurname());
+        assertEquals(EXPECTED_PID, dbClient.getPid());
+        assertEquals(EXPECTED_SEX, dbClient.getSex());
+    }
+
+    @Test
+    @UseDataProvider("getClient")
+    public void updateClient(final Client client) throws Exception {
+        final UUID clientUuid = client.getUuid();
+        when(clientRepository.exists(clientUuid)).thenReturn(true);
+        when(clientRepository.findOne(clientUuid)).thenReturn(client);
+        when(clientRepository.save(any(Client.class))).thenReturn(client);
+        Client dbClient = clientService.update(clientUuid, client);
 
         assertEquals(EXPECTED_NAME, dbClient.getNames().toArray()[0]);
         assertEquals(EXPECTED_SURNAME, dbClient.getSurname());

@@ -13,28 +13,34 @@ import java.util.UUID;
 @Transactional
 public class ClientService {
 
-    private final ClientRepository clientsRepository;
+    private final ClientRepository clientRepository;
 
     @Autowired
     public ClientService(ClientRepository clientsRepository) {
-        this.clientsRepository = clientsRepository;
+        this.clientRepository = clientsRepository;
     }
 
     List<Client> findAll() {
-        return clientsRepository.findAll();
+        return clientRepository.findAll();
     }
 
     Client findById(UUID id) throws NotFoundException {
         throwClientNotFoundIfDoesNotExist(id, Client.class);
-        return clientsRepository.findOne(id);
+        return clientRepository.findOne(id);
     }
 
     Client create(Client client) {
-        return clientsRepository.save(client);
+        return clientRepository.save(client);
+    }
+
+    Client update(UUID id, Client client) {
+        throwClientNotFoundIfDoesNotExist(id, Client.class);
+        client.setUuid(id);
+        return clientRepository.save(client);
     }
 
     private void throwClientNotFoundIfDoesNotExist(UUID id, Class object) throws NotFoundException {
-        if (!clientsRepository.exists(id)) {
+        if (!clientRepository.exists(id)) {
             throw new NotFoundException(object.getSimpleName());
         }
     }
