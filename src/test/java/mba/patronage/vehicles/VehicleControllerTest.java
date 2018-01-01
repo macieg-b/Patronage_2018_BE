@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -59,6 +60,19 @@ public class VehicleControllerTest {
                 .andExpect(jsonPath("$", hasSize(VEHICLES_LIST_SIZE)));
     }
 
+    @Test
+    public void getOneVehicle() throws Exception {
+        Vehicle vehicle = getVehicle();
+        when(vehicleService.findById(EXPECTED_UUID)).thenReturn(vehicle);
+        mockMvc.perform(get(String.format("%s/%s", Api.URL_VEHICLE, EXPECTED_UUID)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(CONTENT_TYPE))
+                .andExpect(jsonPath("$.uuid", is(EXPECTED_UUID.toString())))
+                .andExpect(jsonPath("$.brand", is(EXPECTED_BRAND)))
+                .andExpect(jsonPath("$.model", is(EXPECTED_MODEL)))
+                .andExpect(jsonPath("$.vin", is(EXPECTED_VIN)));
+    }
+
 
     private List<Vehicle> getVehicles() throws ParseException {
 
@@ -75,6 +89,7 @@ public class VehicleControllerTest {
 
     private Vehicle getVehicle() throws ParseException {
         return Vehicle.builder()
+                .uuid(EXPECTED_UUID)
                 .brand(EXPECTED_BRAND)
                 .model(EXPECTED_MODEL)
                 .vin(EXPECTED_VIN)

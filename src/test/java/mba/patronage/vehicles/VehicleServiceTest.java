@@ -2,6 +2,7 @@ package mba.patronage.vehicles;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
+import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import mba.patronage.vehicles.model.db.Vehicle;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -54,6 +56,19 @@ public class VehicleServiceTest {
         when(vehicleRepository.findAll()).thenReturn(Collections.emptyList());
         List<Vehicle> vehicleList = vehicleService.findAll();
         assertTrue(vehicleList.isEmpty());
+    }
+
+    @Test
+    @UseDataProvider("getVehicle")
+    public void findVehicleById(final Vehicle vehicle) {
+        final UUID vehicleId = vehicle.getUuid();
+        when(vehicleRepository.exists(vehicleId)).thenReturn(true);
+        when(vehicleRepository.findOne(vehicleId)).thenReturn(vehicle);
+        Vehicle dbvVehicle = vehicleService.findById(vehicleId);
+
+        assertEquals(EXPECTED_BRAND, dbvVehicle.getBrand());
+        assertEquals(EXPECTED_MODEL, dbvVehicle.getModel());
+        assertEquals(EXPECTED_VIN, dbvVehicle.getVin());
     }
 
 
